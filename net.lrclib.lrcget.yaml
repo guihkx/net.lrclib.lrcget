@@ -26,6 +26,7 @@ modules:
       env:
         CARGO_NET_OFFLINE: 'true'
         XDG_CACHE_HOME: /run/build/lrcget/flatpak-node/cache
+        LINDERA_CACHE: /run/build/lrcget/lindera-dics
     build-commands:
       - HOME=$PWD yarn config --offline set yarn-offline-mirror $FLATPAK_BUILDER_BUILDDIR/flatpak-node/yarn-mirror
       - yarn --offline --frozen-lockfile install
@@ -39,8 +40,8 @@ modules:
     sources:
       - type: git
         url: https://github.com/tranxuanthang/lrcget.git
-        commit: 05e42862a390f766816a112b9c7a2997685b2004
-        tag: 2.1.0
+        commit: bd31b5c2789576e9c875e37ba87e792da02b4606
+        tag: 2.2.0
         x-checker-data:
           type: git
           tag-pattern: ^([\d.]+)$
@@ -48,3 +49,13 @@ modules:
         path: yarn.lock
       - node-sources.json
       - cargo-sources.json
+      - type: file
+        dest: lindera-dics/0.43.3
+        url: https://lindera.dev/unidic-mecab-2.1.2.tar.gz
+        sha256: 24ac75fe4e44d973b55e65847c35fa4aec2db7a41a07b49ca125146db9fc1189
+      - type: file
+        dest: lindera-dics/0.43.3
+        url: https://lindera.dev/mecab-ko-dic-2.1.1-20180720.tar.gz
+        sha256: 702ced21c6167e9d9aebc674ab5ee54af58d4443975f2940d37d0567c020591a
+      - type: patch
+        path: patches/lindera-offline-dics.patch

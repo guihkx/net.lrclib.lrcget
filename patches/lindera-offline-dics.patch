@@ -1,0 +1,44 @@
+diff --git a/cargo/vendor/lindera-dictionary-0.43.3/src/assets.rs b/cargo/vendor/lindera-dictionary-0.43.3/src/assets.rs
+index 58afc4c..c8b75a6 100644
+--- a/cargo/vendor/lindera-dictionary-0.43.3/src/assets.rs
++++ b/cargo/vendor/lindera-dictionary-0.43.3/src/assets.rs
+@@ -209,31 +209,6 @@ pub async fn fetch(
+         // Source file path for build package
+         let source_path_for_build = &build_dir.join(params.file_name);
+ 
+-        // Download source file to build directory
+-        let tmp_path = Path::new(&build_dir).join(params.file_name.to_owned() + ".download");
+-
+-        // Download a tarball
+-        let client = Client::builder()
+-            .user_agent(format!("Lindera/{}", env!("CARGO_PKG_VERSION")))
+-            .build()?;
+-
+-        debug!("Downloading {:?}", params.download_urls);
+-        let mut dest = File::create(tmp_path.as_path())?;
+-        let content = download_with_retry(
+-            &client,
+-            params.download_urls.to_vec(),
+-            MAX_ROUND,
+-            params.md5_hash,
+-        )
+-        .await?;
+-
+-        io::copy(&mut Cursor::new(content.as_slice()), &mut dest)?;
+-        dest.flush()?;
+-
+-        debug!("Content-Length: {}", content.len());
+-        debug!("Downloaded to {}", tmp_path.display());
+-        rename(tmp_path.clone(), source_path_for_build).expect("Failed to rename temporary file");
+-
+         // Decompress a tar.gz file
+         let tmp_extract_path =
+             Path::new(&build_dir).join(format!("tmp-archive-{}", params.input_dir));
+@@ -277,7 +252,6 @@ pub async fn fetch(
+         }
+ 
+         let _ = std::fs::remove_dir_all(&tmp_extract_path);
+-        drop(dest);
+         let _ = std::fs::remove_file(source_path_for_build);
+     }
+ 
